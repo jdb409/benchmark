@@ -31,17 +31,21 @@ class CandidateForm extends Component {
         const { candidateId } = this.state;
         const { percentile } = this.props;
         const { handleChange, handleSubmit } = this;
-        console.log(this.props)
 
         return (
-            <div className = 'container'>
-            <br/>
-            <h1>Enter your ID to view your performance</h1>
+            <div className='container'>
+                <br />
+                <h1>Enter your ID to view your performance</h1>
                 <form onSubmit={handleSubmit}>
                     <input className='form-control' type='number' name='candidateId' placeholder='...' onChange={handleChange} value={candidateId} />
-                    <br/>
-                    <button className='btn btn-primary btn-lg'>Submit</button>
+                    <br />
+                    <button className='btn btn-primary btn-lg' disabled={candidateId.length === 0 ? true : null} >Submit</button>
                 </form>
+                {percentile.err && !percentile.codingPercentile ?
+                    <h1 className='alert alert-warning'>{percentile.err}</h1>
+                    :
+                    null
+                }
                 {percentile && percentile.codingPercentile ?
                     <Display percentile={percentile} />
                     :

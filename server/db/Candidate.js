@@ -44,7 +44,7 @@ Candidate.calculatePercentile = (candidate, similar, type) => {
 
 
 //Get candidates percentile
-Candidate.getPerecentiles = (candidateId) => {
+Candidate.getPercentiles = (candidateId) => {
     let candidate;
 
     return Candidate.findOne({
@@ -56,6 +56,7 @@ Candidate.getPerecentiles = (candidateId) => {
             return Company.findSimilar(candidate.company_id)
         })
         .then(similarCompanies => {
+            if (!similarCompanies.length) throw new Error('No similar companies')
             //find similar candidates
             return Candidate.findSimilar(candidate, similarCompanies)
         })
@@ -63,8 +64,16 @@ Candidate.getPerecentiles = (candidateId) => {
             //calculate percentiles    
             const codingPercentile = Candidate.calculatePercentile(candidate, similar, 'coding_score')
             const communicationPercentile = Candidate.calculatePercentile(candidate, similar, 'communication_score')
-            console.log(codingPercentile, communicationPercentile)
             return {codingPercentile, communicationPercentile, candidate}
+        })
+        .catch(err => {
+            //checking to see what the error is
+            if (err.message.indexOf('_') >= 0) {
+                return {err: 'User Not Found'};                
+            }
+            else {
+                return {err: err.message}
+            }
         })
 }
 

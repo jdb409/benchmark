@@ -19,6 +19,7 @@ Company.findSimilar = (companyId) => {
     });
 
     const getOther = Company.findAll({
+        //exclude current company
         where: {
             company_id: {
                 [Op.ne]: companyId
@@ -27,10 +28,10 @@ Company.findSimilar = (companyId) => {
     })
     return Promise.all([getCompany, getOther])
         .then(([company, others]) => {
+            //filter out companies that are too different
             const similar = others.filter(other => {
                 return Math.abs(company.fractal_index - other.fractal_index) < .15
             }).map(other => other.company_id)
-            console.log('sadf',similar)
             return similar;
         })
         .catch(err => {

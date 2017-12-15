@@ -20,6 +20,7 @@ export const fetchPercentiles = (candidateId) => {
         axios.get(`/api/candidate/${candidateId}`)
         .then(res => res.data)
         .then(percentiles => {
+            console.log(percentiles)
             dispatch(getPercentiles(percentiles))
         })
     }

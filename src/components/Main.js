@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import CandidateForm from './CandidateForm';
 
-class Main extends Component {
+export default class Main extends Component {
     render() {
         return (
             <div>
@@ -14,4 +12,3 @@ class Main extends Component {
     }
 }
 
-export default connect(null, null)(Main);

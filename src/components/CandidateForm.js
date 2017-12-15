@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { fetchPercentiles } from '../store/percentile'
 
-import { connect } from 'react-redux';
+import Display from './Display';
 
 class CandidateForm extends Component {
 
@@ -28,19 +29,34 @@ class CandidateForm extends Component {
 
     render() {
         const { candidateId } = this.state;
+        const { percentile } = this.props;
         const { handleChange, handleSubmit } = this;
+        console.log(this.props)
 
         return (
-            <div>
+            <div className = 'container'>
+            <br/>
+            <h1>Enter your ID to view your performance</h1>
                 <form onSubmit={handleSubmit}>
-                    <label htmlFor='candidateId'>Enter your Id</label>
-                    <input type='number' name='candidateId' placeholder='...' onChange={handleChange} value={candidateId} />
-                    <button className='btn btn-primary'>Submit</button>
+                    <input className='form-control' type='number' name='candidateId' placeholder='...' onChange={handleChange} value={candidateId} />
+                    <br/>
+                    <button className='btn btn-primary btn-lg'>Submit</button>
                 </form>
+                {percentile && percentile.codingPercentile ?
+                    <Display percentile={percentile} />
+                    :
+                    null
+                }
             </div>
         )
     }
 }
+
+const mapState = ({ percentile }) => {
+    return {
+        percentile
+    }
+};
 
 const mapDispatch = (dispatch) => {
     return {
@@ -50,4 +66,4 @@ const mapDispatch = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatch)(CandidateForm);
+export default connect(mapState, mapDispatch)(CandidateForm);

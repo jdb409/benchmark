@@ -64,7 +64,7 @@ Candidate.getPerecentiles = (candidateId) => {
             const codingPercentile = Candidate.calculatePercentile(candidate, similar, 'coding_score')
             const communicationPercentile = Candidate.calculatePercentile(candidate, similar, 'communication_score')
             console.log(codingPercentile, communicationPercentile)
-            return {codingPercentile, communicationPercentile}
+            return {codingPercentile, communicationPercentile, candidate}
         })
 }
 

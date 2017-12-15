@@ -29,7 +29,7 @@ Company.findSimilar = (companyId) => {
         .then(([company, others]) => {
             const similar = others.filter(other => {
                 return Math.abs(company.fractal_index - other.fractal_index) < .15
-            })
+            }).map(other => other.company_id)
             return similar;
         })
 }

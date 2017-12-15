@@ -1,5 +1,6 @@
 const db = require('./conn');
 const Sequelize = db.Sequelize;
+const Op = Sequelize.Op;
 const Company = require('./Company')
 
 const Candidate = db.define('candidate', {
@@ -20,38 +21,53 @@ const Candidate = db.define('candidate', {
     }
 })
 
-//takes a candidates_id and returns precentile for their coding and comm skills
-//compares to others at the SAME TITLE and SIMILAR COMPANIES
-
-//similar companies found = 
-//Math.abs(company_1.fractal_index - company_2.fractal_index) < .15
-
-//First we get candidate
-//we get cand's company and use it to find other similar companies
-
-//we create a sep function, and pass in their company
-//find all other companies, loop through them and filter using formula.
-//return filtered list
-
-//get all candidates that work at those companies have the same title. 
-
-//then calculate percentile in another function
-//get all with scores lower than candidate/total * 100;
-
-
-Candidate.getPerecentiles = (candidateId) => {
-    return Candidate.findOne({
+//Get count of similar candidates
+Candidate.findSimilar = (candidate, similarCompanies) => {
+    return Candidate.findAll({
         where: {
-            candidate_id: candidateId
+            title: candidate.title,
+            company_id: {
+                [Op.in]: similarCompanies
+            }
         }
     })
-    .then(candidate => {
-        return Company.findSimilar(candidate.company_id)
-    })
-    .then(company => {
-        return company;
-    })
 }
+
+Candidate.calculatePercentile = (candidate, similar, type) => {
+    //get all with score less than candidates.  chose not to include equal scores
+    const getSmaller = similar.filter(sim => {
+        return candidate[type] > sim[type];
+    })
+    const percentile = Math.floor((getSmaller.length / similar.length) * 100);
+    return percentile;
+}
+
+
+//Get candidates percentile
+Candidate.getPerecentiles = (candidateId) => {
+    let candidate;
+
+    return Candidate.findOne({
+        where: { candidate_id: candidateId }
+    })
+        .then(_candidate => {
+            candidate = _candidate;
+            //find similar companies
+            return Company.findSimilar(candidate.company_id)
+        })
+        .then(similarCompanies => {
+            //find similar candidates
+            return Candidate.findSimilar(candidate, similarCompanies)
+        })
+        .then(similar => {
+            //calculate percentiles    
+            const codingPercentile = Candidate.calculatePercentile(candidate, similar, 'coding_score')
+            const communicationPercentile = Candidate.calculatePercentile(candidate, similar, 'communication_score')
+            console.log(codingPercentile, communicationPercentile)
+            return {codingPercentile, communicationPercentile}
+        })
+}
+
 
 
 

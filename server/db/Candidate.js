@@ -21,7 +21,7 @@ const Candidate = db.define('candidate', {
     }
 })
 
-//Get count of similar candidates
+//Get all similar candidates
 Candidate.findSimilar = (candidate, similarCompanies) => {
     return Candidate.findAll({
         where: {
